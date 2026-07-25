@@ -1,0 +1,22 @@
+# IDE
+.idea/
+.vscode/
+.ruff_cache/
+.agents/
+
+# Python
+__pycache__/
+*.pyc
+
+# 数据输出文件
+*.txt
+
+# 保留小文件
+!test.txt
+
+# 备份 / 文档
+*.docx
+*.pdf
+
+# Claude
+.claude/
