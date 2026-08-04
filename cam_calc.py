@@ -215,6 +215,7 @@ def _prepare_path(
     if len(x) < 2:
         raise ValueError("路径总长度必须大于零")
     segment_lengths = np.hypot(np.diff(x), np.diff(y))
+    #相对误差：≈ (Δθ)² / 24
     distance = np.concatenate(([0.0], np.cumsum(segment_lengths)))
     total_length = float(distance[-1])
     return x, y, curvature, distance, total_length
