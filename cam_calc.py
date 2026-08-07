@@ -25,44 +25,6 @@ class CamParameters:
     closure_mode: str = "linear"
 
 
-def create_clamped_knots(control_points: np.ndarray, degree: int) -> np.ndarray:
-    """按控制多边形弦长创建定义域为 [0,1] 的夹持节点向量。"""
-    segment_lengths = np.linalg.norm(np.diff(control_points, axis=0), axis=1)
-    if np.sum(segment_lengths) <= EPSILON:
-        parameters = np.linspace(0.0, 1.0, len(control_points))
-    else:
-        parameters = np.concatenate(([0.0], np.cumsum(segment_lengths)))
-        parameters /= parameters[-1]
-
-    internal_count = len(control_points) - degree - 1
-    internal_knots = np.array([
-        np.mean(parameters[index:index + degree])
-        for index in range(1, internal_count + 1)
-    ])
-    return np.concatenate((
-        np.zeros(degree + 1),
-        internal_knots,
-        np.ones(degree + 1),
-    ))
-
-
-def create_parametric_spline(
-    control_points: np.ndarray,
-    degree: int = 3,
-    knots: np.ndarray = None,
-) -> spl.BSpline:
-    """用真实控制点和共同节点向量构造二维夹持 B 样条。"""
-    points = np.asarray(control_points, dtype=float)
-    degree = min(int(degree), 5, len(points) - 1)
-    if degree < 1:
-        raise ValueError("至少需要两个控制点")
-    if not np.isfinite(points).all():
-        raise ValueError("控制点中包含 NaN 或无穷值")
-    if knots is None:
-        knots = create_clamped_knots(points, degree)
-    else:
-        knots = np.asarray(knots, dtype=float)
-    return spl.BSpline(knots, points, degree, axis=0)
 
 
 def calculate_signed_curvature(spline, t: np.ndarray) -> np.ndarray:
